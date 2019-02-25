@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:BW="java://com.tibco.pe.core.JavaCustomXPATHFunctions" xmlns:ns="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/pe/EngineTypes">
+    <pd:name>Folder/aplicarFormatos.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="datosAFormatear">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="Rut" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="Monto" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="Cuenta" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="Fecha_yyyy_MM_dd" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="Fecha_dd_MM_yyyy_Slash" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>27</pd:startX>
+    <pd:startY>35</pd:startY>
+    <pd:returnBindings>
+        <xsl:copy-of select="$Map-Formatos/datosFormateados"/>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="datosFormateados">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="Rut" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="Monto" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="Cuenta" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="Fecha_yyyy_MM_dd" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="Fecha_dd_MM_yyyy_Slash" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>462</pd:endX>
+    <pd:endY>35</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://itg.isban.cl/SubProcess/Generales/aplicarFormatos</pd:targetNamespace>
+    <pd:activity name="Map Formatos">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>148</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <element>
+                <xsd:element name="datosFormateados">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Rut" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                            <xsd:element name="Monto" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                            <xsd:element name="Cuenta" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                            <xsd:element name="Fecha_yyyy_MM_dd" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                            <xsd:element name="Fecha_dd_MM_yyyy_Slash" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <datosFormateados>
+                <xsl:for-each select="$Start/datosAFormatear/Rut">
+                    <xsl:variable name="in_rut" select="tib:pad-front(., 11, '0')"/>
+                    <xsl:variable name="M1" select="if (substring($in_rut,1,1)>0) then concat(substring($in_rut,1,1),'.') else ''"/>
+                    <xsl:variable name="M2" select="if (string-length($M1)=0) then (if (number(substring($in_rut,2,3))>0) then concat(number(substring($in_rut,2,3)),'.') else '') else concat($M1,substring($in_rut,2,3),'.')"/>
+                    <xsl:variable name="M3" select="if (string-length($M2)=0) then (if (number(substring($in_rut,5,3))>0) then concat(number(substring($in_rut,5,3)),'.') else '') else concat($M2,substring($in_rut,5,3),'.')"/>
+                    <xsl:variable name="M4" select="if (string-length($M3)=0) then (if (number(substring($in_rut,8,3))>0) then number(substring($in_rut,8,3)) else '') else concat($M3,substring($in_rut,8,3))"/>
+                    <Rut>
+                        <xsl:value-of select="concat($M4,'-',tib:right($in_rut, 1))"/>
+                    </Rut>
+                </xsl:for-each>
+                <xsl:for-each select="$Start/datosAFormatear/Monto">
+                    <xsl:variable name="in_monto" select="tib:pad-front(., 13, '0')"/>
+                    <xsl:variable name="M1" select="if (substring($in_monto,1,1)>0) then concat(substring($in_monto,1,1),'.') else ''"/>
+                    <xsl:variable name="M2" select="if (string-length($M1)=0) then (if (number(substring($in_monto,2,3))>0) then concat(number(substring($in_monto,2,3)),'.') else '') else concat($M1,substring($in_monto,2,3),'.')"/>
+                    <xsl:variable name="M3" select="if (string-length($M2)=0) then (if (number(substring($in_monto,5,3))>0) then concat(number(substring($in_monto,5,3)),'.') else '') else concat($M2,substring($in_monto,5,3),'.')"/>
+                    <xsl:variable name="M4" select="if (string-length($M3)=0) then (if (number(substring($in_monto,8,3))>0) then concat(number(substring($in_monto,8,3)),'.') else '') else concat($M3,substring($in_monto,8,3),'.')"/>
+                    <xsl:variable name="M5" select="if (string-length($M4)=0) then (if (number(substring($in_monto,11,3))>0) then number(substring($in_monto,11,3)) else '') else concat($M4,substring($in_monto,11,3))"/>
+                    <Monto>
+                        <xsl:value-of select="$M5"/>
+                    </Monto>
+                </xsl:for-each>
+                <xsl:for-each select="$Start/datosAFormatear/Cuenta">
+                    <xsl:variable name="in_cuenta" select="tib:pad-front(., 12, '0')"/>
+                    <Cuenta>
+                        <xsl:value-of select="concat(substring($in_cuenta,1,1), '-',substring($in_cuenta,2,3), '-',substring($in_cuenta,5,2), '-',substring($in_cuenta,7,5), '-',substring($in_cuenta,12,1))"/>
+                    </Cuenta>
+                </xsl:for-each>
+                <xsl:for-each select="$Start/datosAFormatear/Fecha_yyyy_MM_dd">
+                    <xsl:variable name="varFechaEntrada" select="translate(., '/', '-')"/>
+                    <Fecha_yyyy_MM_dd>
+                        <xsl:value-of select="if (tib:index-of($varFechaEntrada, '-')=5) then $varFechaEntrada&#xA; else concat(substring($varFechaEntrada,7,4),'-',substring($varFechaEntrada,4,3),substring($varFechaEntrada,1,2))"/>
+                    </Fecha_yyyy_MM_dd>
+                </xsl:for-each>
+                <xsl:for-each select="$Start/datosAFormatear/Fecha_dd_MM_yyyy_Slash">
+                    <xsl:variable name="varFechaEntrada" select="translate(., '-', '/')"/>
+                    <Fecha_dd_MM_yyyy_Slash>
+                        <xsl:value-of select="if (tib:index-of($varFechaEntrada, '/')=3) then $varFechaEntrada&#xA; else concat(substring($varFechaEntrada,9,2),substring($varFechaEntrada,5,4),substring($varFechaEntrada,1,4))"/>
+                    </Fecha_dd_MM_yyyy_Slash>
+                </xsl:for-each>
+            </datosFormateados>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Map Formatos</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Formatos</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

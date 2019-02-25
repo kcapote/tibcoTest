@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions">
+    <pd:name>Folder/Pruebas.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startX>78</pd:startX>
+    <pd:startY>65</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>600</pd:endX>
+    <pd:endY>66</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1538509482036</pd:targetNamespace>
+    <pd:activity name="Map Data">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>469</pd:x>
+        <pd:y>65</pd:y>
+        <config>
+            <element>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="cuenta" type="xsd:string"/>
+                            <xsd:element name="numeroPan" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="montoPagado" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="bool" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <xsl:variable name="cuenta" select="'007013355449'"/>
+            <xsl:variable name="numeroPan" select="'5404771005005977'"/>
+            <xsl:variable name="montoPagado" select="'00300000000'"/>
+            <xsl:variable name="m0" select="tib:pad-front(substring($montoPagado,1,string-length($montoPagado) - 2), 13, '0')&#xA;&#xA;"/>
+            <xsl:variable name="m1" select=" if (substring($m0,1,1)>0) then concat(substring($m0,1,1),'.') else ''&#xA;"/>
+            <xsl:variable name="m2" select="if (string-length($m1)=0) then (if (number(substring($m0,2,3))>0) then&#xA;&#x9; concat(number(substring($m0,2,3)),'.') else '')&#xA; else&#xA;&#x9; concat($m1,substring($m0,2,3),'.')&#xA;"/>
+            <xsl:variable name="m3" select="if (string-length($m2)=0) then (if (number(substring($m0,5,3))>0) then&#xA;&#x9; concat(number(substring($m0,5,3)),'.') else '')&#xA; else &#xA;&#x9;concat($m2,substring($m0,5,3),'.')"/>
+            <xsl:variable name="m4" select="if (string-length($m3)=0) then (if (number(substring($m0,8,3))>0) then &#xA;&#x9;concat(number(substring($m0,8,3)),'.') else '')&#xA; else &#xA;&#x9;concat($m3,substring($m0,8,3),'.')&#xA;"/>
+            <xsl:variable name="m5" select="if (string-length($m4)=0) then (if (number(substring($m0,11,3))>0) then&#xA;&#x9; number(substring($m0,11,3)) else '') &#xA;else &#xA;&#x9;concat($m4,substring($m0,11,3))"/>
+            <root>
+                <cuenta>
+                    <xsl:value-of select="concat(substring($cuenta,1,1), '-',substring($cuenta,2,3), '-',substring($cuenta,5,2), '-',substring($cuenta,7,5), '-',substring($cuenta,12,1))"/>
+                </cuenta>
+                <numeroPan>
+                    <xsl:value-of select="concat('**** **** ****', ' ',substring($numeroPan,13,4))"/>
+                </numeroPan>
+                <montoPagado>
+                    <xsl:value-of select="$m5"/>
+                </montoPagado>
+                <bool>
+                    <xsl:value-of select="(number(1000)+number(if($Map-Data-1/root=&quot;&quot;)then 0 else $Map-Data-1/root ))>=&#xA;(number(1000))"/>
+                </bool>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="aplicarFormatos">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>195</pd:x>
+        <pd:y>62</pd:y>
+        <config>
+            <processName>/Folder/aplicarFormatos.process</processName>
+        </config>
+        <pd:inputBindings>
+            <xsl:variable name="monto" select="'00300000000'"/>
+            <datosAFormatear>
+                <Monto>
+                    <xsl:value-of select="$monto"/>
+                </Monto>
+            </datosAFormatear>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Map-Data-1">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>315</pd:x>
+        <pd:y>116</pd:y>
+        <config>
+            <element>
+                <xsd:element name="group">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="montotransaccion" type="xsd:string"/>
+                            <xsd:element name="valorDolar" type="xsd:string"/>
+                            <xsd:element name="montopesos" type="xsd:string"/>
+                            <xsd:element name="result" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <xsl:variable name="numero" select="5"/>
+            <group>
+                <montotransaccion>
+                    <xsl:value-of select="number(&#xA;concat(   tib:left(&quot;00000000010000000&quot;,10  )  ,&quot;.&quot;,  tib:right(&quot;00000000010000000&quot;, 7))&#xA;)"/>
+                </montotransaccion>
+                <valorDolar>
+                    <xsl:value-of select="number(&#xA;concat(   tib:left(&quot;00000000659700000&quot;,11  )  ,&quot;.&quot;,  tib:right(&quot;00000000659700000&quot;, 6))&#xA;)"/>
+                </valorDolar>
+                <montopesos>
+                    <xsl:value-of select="number(&#xA;concat(   tib:left(&quot;00000006597000000&quot;,10  )  ,&quot;.&quot;,  tib:right(&quot;00000006597000000&quot;, 7))&#xA;)"/>
+                </montopesos>
+                <xsl:choose>
+                    <xsl:when test="$numero >3">
+                        <result>
+                            <xsl:value-of select="'Mayor a tres'"/>
+                        </result>
+                    </xsl:when>
+                    <xsl:when test="$numero >4">
+                        <result>
+                            <xsl:value-of select="'Mayor a cuatro'"/>
+                        </result>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <result>
+                            <xsl:value-of select="'Otherwise'"/>
+                        </result>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </group>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>aplicarFormatos</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Data</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>aplicarFormatos</pd:from>
+        <pd:to>Map-Data-1</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map-Data-1</pd:from>
+        <pd:to>Map Data</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>
