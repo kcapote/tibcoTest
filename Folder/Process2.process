@@ -23,6 +23,7 @@
                         <xsd:sequence>
                             <xsd:element name="param" type="xsd:string"/>
                             <xsd:element name="paramLinea" type="xsd:string"/>
+                            <xsd:element name="lastName" type="xsd:string"/>
                         </xsd:sequence>
                     </xsd:complexType>
                 </xsd:element>
@@ -36,6 +37,9 @@
                 <paramLinea>
                     <xsl:value-of select="'Linea'"/>
                 </paramLinea>
+                <lastName>
+                    <xsl:value-of select="'Capote'"/>
+                </lastName>
             </root>
         </pd:inputBindings>
     </pd:activity>
